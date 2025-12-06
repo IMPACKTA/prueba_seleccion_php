@@ -1,10 +1,17 @@
 <?php
 require_once 'database.php';
 
-// TODO: Obtener la conexión a la base de datos
-// $pdo = getDbConnection();
-
-// TODO: Escribir la consulta SQL para obtener los 25 Pokemon más pesados
+$pdo = getDbConnection();
+$limit = 25;
+$sql = "
+    SELECT * 
+    FROM pokemons 
+    ORDER BY weight DESC 
+    LIMIT :limit
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':limit' => $limit]);
+$heavierPokemons = $stmt->fetchAll();
 
 ?>
 <!DOCTYPE html>
@@ -25,57 +32,112 @@ require_once 'database.php';
         </header>
 
         <main>
-            <!-- TODO: Mostrar la tabla de Pokemon aquí -->
             <table>
                 <thead>
                     <tr>
                         <th>Imagen</th>
                         <th>Nombre</th>
+                        <th>Salud</th>
+                        <th>Altura</th>
                         <th>Peso</th>
-                        <!-- Añadir más columnas según sea necesario -->
+                        <th>Número</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Iterar sobre los resultados de la base de datos -->
-                    <tr>
-                        <td colspan="3" style="text-align: center;">Aquí aparecerán los Pokemon...</td>
-                    </tr>
+                    <?php foreach($heavierPokemons as $heavierPokemon): ?>
+                        <tr>
+                            <td>
+                                <img src="<?= $heavierPokemon['url']; ?>" class="pokemon-sprite">
+                            </td>
+                            <td>
+                                <?= $heavierPokemon['name']; ?>
+                            </td>
+                            <td>
+                                <?= $heavierPokemon['health']; ?>
+                            </td>
+                            <td>
+                                <?= $heavierPokemon['height']; ?>
+                            </td>
+                            <td>
+                                <?= $heavierPokemon['weight']; ?>
+                            </td>
+                            <td>
+                                <?= $heavierPokemon['number']; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach;?>
                 </tbody>
             </table>
         </main>
     </div>
 
-    <!-- Modal para nuevo Pokemon -->
     <div id="pokemonModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Registrar Nuevo Pokemon</h2>
             <form id="newPokemonForm">
-                <!-- TODO: Añadir los campos del formulario -->
                 <div class="form-group">
                     <label for="name">Nombre:</label>
                     <input type="text" id="name" name="name" required>
                 </div>
-
-                <!-- Añadir más campos aquí -->
-
+                <div class="form-group">
+                    <label for="image">Imagen (url):</label>
+                    <input type="text" id="image" name="image" required>
+                </div>
+                <div class="form-group">
+                    <label for="health">Salud:</label>
+                    <input type="number" id="health" name="health" required>
+                </div>
+                <div class="form-group">
+                    <label for="height">Altura:</label>
+                    <input type="number" id="height" name="height" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Peso:</label>
+                    <input type="number" id="weight" name="weight" required>
+                </div>
+                <div class="form-group">
+                    <label for="number">Número:</label>
+                    <input type="number" id="number" name="number" required>
+                </div>
                 <button type="submit" class="btn">Guardar</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Script básico para el modal
         var modal = document.getElementById("pokemonModal");
         var btn = document.getElementById("newPokemonBtn");
         var span = document.getElementsByClassName("close")[0];
 
-        //Hacer funcionalidades basicas del modal.
-        /* 
-         AQUI
-        */
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
 
-        // TODO: Manejar el envío del formulario con AJAX o recarga de página
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        document.getElementById('newPokemonForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('pokemonAdd.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pokemon añadido correctamente!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        })
     </script>
 </body>
 
