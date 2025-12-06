@@ -46,22 +46,22 @@ $heavierPokemons = $stmt->fetchAll();
                 <tbody>
                     <?php foreach($heavierPokemons as $heavierPokemon): ?>
                         <tr>
-                            <td style="text-align: center;">
+                            <td>
                                 <img src="<?= $heavierPokemon['url']; ?>" class="pokemon-sprite">
                             </td>
-                            <td style="text-align: center;">
+                            <td>
                                 <?= $heavierPokemon['name']; ?>
                             </td>
-                            <td style="text-align: center;">
+                            <td>
                                 <?= $heavierPokemon['health']; ?>
                             </td>
-                            <td style="text-align: center;">
+                            <td>
                                 <?= $heavierPokemon['height']; ?>
                             </td>
-                            <td style="text-align: center;">
+                            <td>
                                 <?= $heavierPokemon['weight']; ?>
                             </td>
-                            <td style="text-align: center;">
+                            <td>
                                 <?= $heavierPokemon['number']; ?>
                             </td>
                         </tr>
